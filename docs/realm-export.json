@@ -1,9 +1,9 @@
 {
-  "id": "emacc",
+  "id": "perit",
   "realm": "perit",
   "displayName": "perit",
   "displayNameHtml": "<div class=\"kc-logo-text\"><span>perit</span></div>",
-  "notBefore": 0,
+  "notBefore": 1649597261,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 300,
@@ -25,13 +25,13 @@
   "enabled": true,
   "sslRequired": "none",
   "registrationAllowed": true,
-  "registrationEmailAsUsername": true,
+  "registrationEmailAsUsername": false,
   "rememberMe": true,
-  "verifyEmail": true,
-  "loginWithEmailAllowed": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": false,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
-  "editUsernameAllowed": true,
+  "editUsernameAllowed": false,
   "bruteForceProtected": false,
   "permanentLockout": false,
   "maxFailureWaitSeconds": 900,
@@ -48,7 +48,7 @@
         "description": "${role_offline-access}",
         "composite": false,
         "clientRole": false,
-        "containerId": "emacc",
+        "containerId": "perit",
         "attributes": {}
       },
       {
@@ -57,7 +57,7 @@
         "description": "Only read-only privileges",
         "composite": false,
         "clientRole": false,
-        "containerId": "emacc",
+        "containerId": "perit",
         "attributes": {}
       },
       {
@@ -71,7 +71,7 @@
           ]
         },
         "clientRole": false,
-        "containerId": "emacc",
+        "containerId": "perit",
         "attributes": {}
       },
       {
@@ -86,7 +86,7 @@
           ]
         },
         "clientRole": false,
-        "containerId": "emacc",
+        "containerId": "perit",
         "attributes": {}
       },
       {
@@ -95,7 +95,7 @@
         "description": "${role_uma_authorization}",
         "composite": false,
         "clientRole": false,
-        "containerId": "emacc",
+        "containerId": "perit",
         "attributes": {}
       }
     ],
@@ -701,8 +701,8 @@
       "protocol": "openid-connect",
       "attributes": {
         "saml.assertion.signature": "false",
-        "saml.force.post.binding": "false",
         "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
         "saml.encrypt": "false",
         "saml.server.signature": "false",
         "saml.server.signature.keyinfo.ext": "false",
@@ -1233,11 +1233,11 @@
           "protocolMapper": "oidc-usermodel-client-role-mapper",
           "consentRequired": false,
           "config": {
-            "multivalued": "true",
             "user.attribute": "foo",
             "access.token.claim": "true",
             "claim.name": "resource_access.${client_id}.roles",
-            "jsonType.label": "String"
+            "jsonType.label": "String",
+            "multivalued": "true"
           }
         },
         {
@@ -1247,11 +1247,11 @@
           "protocolMapper": "oidc-usermodel-realm-role-mapper",
           "consentRequired": false,
           "config": {
-            "multivalued": "true",
             "user.attribute": "foo",
             "access.token.claim": "true",
             "claim.name": "realm_access.roles",
-            "jsonType.label": "String"
+            "jsonType.label": "String",
+            "multivalued": "true"
           }
         }
       ]
@@ -1338,7 +1338,7 @@
     "xContentTypeOptions": "nosniff",
     "xRobotsTag": "none",
     "xFrameOptions": "SAMEORIGIN",
-    "contentSecurityPolicy": "frame-src 'self'; object-src 'none';",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
@@ -2116,5 +2116,5 @@
     "clientSessionMaxLifespan": "0"
   },
   "keycloakVersion": "10.0.1",
-  "userManagedAccessAllowed": false
+  "userManagedAccessAllowed": true
 }
