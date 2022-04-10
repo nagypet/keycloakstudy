@@ -1,0 +1,57 @@
+#docker compose for local development
+
+version: '3.6'
+
+networks:
+    back-tier-net:
+        driver: bridge
+    monitoring:
+        driver: bridge
+
+
+services: 
+
+    #####################################################################################                 
+    postgres:
+    #####################################################################################                 
+        container_name: keycloakstudy-postgres
+        image: postgres:10.13-alpine
+        environment:
+            - POSTGRES_DB=keycloak
+            - POSTGRES_USER=keycloak
+            - POSTGRES_PASSWORD=sa
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        networks: 
+            - back-tier-net
+            
+  
+    #####################################################################################                 
+    keycloak:
+    #####################################################################################                 
+        container_name: keycloakstudy-keycloak
+        image: "jboss/keycloak:10.0.1"
+        environment:
+            - KEYCLOAK_USER=admin
+            - KEYCLOAK_PASSWORD=password
+            - DB_VENDOR=postgres
+            - DB_ADDR=postgres
+            - DB_DATABASE=keycloak
+            - DB_SCHEMA=keycloak
+            - DB_USER=keycloak
+            - DB_PASSWORD=sa
+        command: ["-Djboss.socket.binding.port-offset=100"]  
+        ports:
+            - "8180:8180"
+            - "8543:8543"
+        networks: 
+            - back-tier-net
+        hostname: keycloak
+        depends_on:
+            - postgres
+
+  
+volumes:
+    postgres:

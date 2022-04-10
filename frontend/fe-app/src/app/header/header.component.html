@@ -1,0 +1,15 @@
+<nav class="navbar navbar-dark bg-dark mb-sm-3">
+  <a class="navbar-brand" href="/">Keycloak demo app
+    <span class="badge badge-info">1.0</span>
+  </a>
+  <div class="navbar-expand mr-auto">
+    <div class="navbar-nav">
+    </div>
+  </div>
+  <form class="form-inline">
+    <button *ngIf="authService.authenticated !== true" type="button" class="btn btn-primary" routerLink="/admin-gui/login"><span class="oi oi-account-login"></span> Login</button>
+    <span *ngIf="authService.authenticated === true" class="text-light">Welcome {{authService.userName}}!</span>
+    <button *ngIf="authService.authenticated === true" type="button" class="btn btn-secondary" style="margin: 0 0 0 10px" (click)="onLogout()"><span class="oi oi-account-logout"></span> Logout</button>
+  </form>
+</nav>
+
