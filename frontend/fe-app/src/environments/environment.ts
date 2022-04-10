@@ -4,7 +4,7 @@
 
 import {KeycloakOptions} from 'keycloak-angular';
 
-const keycloakUrl = 'http://localhost:8180/auth';
+const keycloakUrl = '/auth';
 
 const keycloakConfig: KeycloakOptions = {
   config: {

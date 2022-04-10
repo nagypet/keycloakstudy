@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit
   {
     this.keycloakService.isLoggedIn().then(() =>
     {
-      //this.keycloakService.loadUserProfile().then(v => console.log(v));
+      this.keycloakService.loadUserProfile().then(v => console.log(v));
       this.loggedIn = true;
     });
   }
