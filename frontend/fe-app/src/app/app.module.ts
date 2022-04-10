@@ -14,14 +14,14 @@ import {AuthService} from './services/auth.service';
 import {initializeKeycloak} from './auth/keycloak-init.factory';
 
 export const routes: Routes = [
-  {path: '', redirectTo: 'admin-gui/settings', pathMatch: 'full'},
-  {path: 'admin-gui', redirectTo: 'admin-gui/settings', pathMatch: 'full'},
+  {path: '', redirectTo: 'admin-gui/public', pathMatch: 'full'},
+  {path: 'admin-gui', redirectTo: 'admin-gui/public', pathMatch: 'full'},
   {
     path: 'admin-gui', component: TabSetComponent,
     children: [
-      {path: 'settings', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_VIEWER']}},
-      {path: 'keystore', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_APPROVER']}},
-      {path: 'truststore', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_ADMIN']}},
+      {path: 'public', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_VIEWER']}},
+      {path: 'approvals', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_APPROVER']}},
+      {path: 'administration', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_ADMIN']}},
     ],
   },
   //{path: 'admin-gui/login', component: LoginComponent},

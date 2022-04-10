@@ -34,6 +34,6 @@ export class HeaderComponent implements OnInit
 
   onLogout()
   {
-    window.location.href = environment.keycloakUrl + '/realms/perit/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin-gui/settings';
+    window.location.href = environment.keycloakUrl + '/realms/perit/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin-gui/public';
   }
 }
