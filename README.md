@@ -17,7 +17,7 @@ References:
 
 ## Links:
 - Admin console: http://localhost:8180
-- User account self-service (2 FA can be enabled): http://localhost:8180/auth/realms/perit/account <= Sign out the admin console first! 
+- User account self-service: http://localhost:8180/auth/realms/perit/account
 - keycloak.js: http://localhost:8180/auth/js/keycloak.js
 
 ## Authentication with username and password
@@ -50,6 +50,7 @@ Keycloak will respond to this with a new access_token and refresh_token.
 
 ## Using Keycloak in Angular
 
+References:
 - [Keycloak integration](https://sairamkrish.medium.com/keycloak-integration-part-2-integration-with-angular-frontend-f2716c696a28)
 - https://github.com/mauriciovigolo/keycloak-angular
 
