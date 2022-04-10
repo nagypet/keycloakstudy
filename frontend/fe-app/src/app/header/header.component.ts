@@ -12,6 +12,7 @@ import {environment} from '../../environments/environment';
 export class HeaderComponent implements OnInit
 {
   loggedIn = false;
+  username = '';
 
   constructor(public authService: AuthService,
               public keycloakService: KeycloakService,
@@ -23,14 +24,16 @@ export class HeaderComponent implements OnInit
   {
     this.keycloakService.isLoggedIn().then(() =>
     {
-      //this.keycloakService.loadUserProfile().then(v => console.log(v));
-      //console.log(this.keycloakService.getUsername());
+      this.keycloakService.loadUserProfile().then(v =>
+      {
+        this.username = v.username?? '';
+      });
       this.loggedIn = true;
     });
   }
 
   onLogout()
   {
-    window.location.href = environment.keycloakUrl + "/realms/perit/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin-gui/settings";
+    window.location.href = environment.keycloakUrl + '/realms/perit/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin-gui/settings';
   }
 }

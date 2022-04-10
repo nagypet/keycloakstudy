@@ -5,8 +5,6 @@ version: '3.6'
 networks:
     back-tier-net:
         driver: bridge
-    monitoring:
-        driver: bridge
 
 
 services: 
@@ -32,7 +30,7 @@ services:
     keycloak:
     #####################################################################################                 
         container_name: keycloakstudy-keycloak
-        image: "jboss/keycloak:10.0.1"
+        image: "jboss/keycloak:16.1.1"
         environment:
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=password
