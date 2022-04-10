@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
+import {KeycloakService} from 'keycloak-angular';
+import {Router} from '@angular/router';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -8,17 +11,25 @@ import {AuthService} from '../services/auth.service';
 })
 export class HeaderComponent implements OnInit
 {
+  loggedIn = false;
 
-  constructor(public authService: AuthService)
+  constructor(public authService: AuthService,
+              public keycloakService: KeycloakService,
+              private router: Router)
   {
   }
 
   ngOnInit(): void
   {
+    this.keycloakService.isLoggedIn().then(() =>
+    {
+      //this.keycloakService.loadUserProfile().then(v => console.log(v));
+      this.loggedIn = true;
+    });
   }
 
   onLogout()
   {
-
+    window.location.href = environment.keycloakUrl + "/realms/perit/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin-gui/settings";
   }
 }

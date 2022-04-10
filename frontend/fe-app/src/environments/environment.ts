@@ -4,9 +4,11 @@
 
 import {KeycloakOptions} from 'keycloak-angular';
 
+const keycloakUrl = 'http://localhost:8180/auth';
+
 const keycloakConfig: KeycloakOptions = {
   config: {
-    url: 'http://localhost:8180/auth',
+    url: keycloakUrl,
     realm: 'perit',
     clientId: 'keycloak-study'
   },
@@ -20,7 +22,7 @@ const keycloakConfig: KeycloakOptions = {
 export const environment = {
   production: false,
   keycloakOptions: keycloakConfig,
-
+  keycloakUrl: keycloakUrl
 };
 
 /*
