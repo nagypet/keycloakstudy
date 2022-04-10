@@ -26,10 +26,15 @@ export class HeaderComponent implements OnInit
     {
       this.keycloakService.loadUserProfile().then(v =>
       {
-        this.username = v.username?? '';
+        this.username = this.textWithDefault(v.firstName) + ' ' + this.textWithDefault(v.lastName) + ' - ' + this.textWithDefault(v.username);
       });
       this.loggedIn = true;
     });
+  }
+
+  textWithDefault(text: string | null | undefined): string
+  {
+    return !!text ? text : '';
   }
 
   onLogout()
