@@ -54,6 +54,155 @@ References:
 - [Keycloak integration](https://sairamkrish.medium.com/keycloak-integration-part-2-integration-with-angular-frontend-f2716c696a28)
 - https://github.com/mauriciovigolo/keycloak-angular
 
+![](docs/fe-1.jpg)
+![](docs/fe-2.jpg)
+
+### Steps
+
+#### Install the following packages:
+```typescript
+"keycloak-angular": "^8.4.0",
+"keycloak-js": "^16.1.1",
+```
+
+#### Initialize the keycloak service
+environment.ts
+```typescript
+import {KeycloakOptions} from 'keycloak-angular';
+
+const keycloakUrl = '/auth';
+
+const keycloakConfig: KeycloakOptions = {
+  config: {
+    url: keycloakUrl,
+    realm: 'perit',
+    clientId: 'keycloak-study'
+  },
+  initOptions: {
+    onLoad: 'check-sso',
+    silentCheckSsoRedirectUri:
+      window.location.origin + '/assets/silent-check-sso.html',
+  },
+};
+
+export const environment = {
+  production: false,
+  keycloakOptions: keycloakConfig,
+  keycloakUrl: keycloakUrl
+};
+```
+
+keycloak-init.factory.ts
+```typescript
+export function initializeKeycloak(keycloakService: KeycloakService)
+{
+  return () => keycloakService.init(environment.keycloakOptions);
+}
+```
+#### silent-check-sso.html
+See the assets folder:
+```html
+<html>
+  <body>
+    <script>
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>
+```
+#### proxy
+proxy.conf.js
+```js
+const PROXY_CONFIG = [
+  {
+    context: [
+      "/auth/**",
+    ],
+    target: "http://localhost:8180",
+    secure: false
+  }
+]
+
+module.exports = PROXY_CONFIG;
+```
+angular.json
+```json
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "fe-app:build",
+            "proxyConfig": "src/proxy.conf.js"
+          },
+
+```
+#### guard
+```typescript
+@Injectable()
+export class AppAuthGuard extends KeycloakAuthGuard
+{
+  constructor(protected router: Router, protected keycloakAngular: KeycloakService)
+  {
+    super(router, keycloakAngular);
+  }
+
+  isAccessAllowed(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean>
+  {
+    return new Promise(async (resolve, reject) =>
+    {
+      if (!this.authenticated)
+      {
+        this.keycloakAngular.login();
+        return;
+      }
+      console.log('Expected role: ', route.data.roles);
+      console.log('User roles :', this.roles);
+      const requiredRoles = route.data.roles;
+      let granted: boolean = false;
+      if (!requiredRoles || requiredRoles.length === 0)
+      {
+        granted = true;
+      } else
+      {
+        for (const requiredRole of requiredRoles)
+        {
+          if (this.roles.indexOf(requiredRole) > -1)
+          {
+            granted = true;
+            break;
+          }
+        }
+      }
+
+      if (!granted)
+      {
+        console.warn('access denied!');
+        this.router.navigate(['/']);
+      } else
+      {
+        console.log('access granted!');
+      }
+      resolve(granted);
+
+    });
+  }
+}
+```
+#### router
+```typescript
+export const routes: Routes = [
+  {path: '', redirectTo: 'admin-gui/public', pathMatch: 'full'},
+  {path: 'admin-gui', redirectTo: 'admin-gui/public', pathMatch: 'full'},
+  {
+    path: 'admin-gui', component: TabSetComponent,
+    children: [
+      {path: 'public', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_VIEWER']}},
+      {path: 'approvals', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_APPROVER']}},
+      {path: 'administration', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_ADMIN']}},
+    ],
+  },
+];
+```
+
 ## Customizing the login theme
 
 See the keycloak folder for a customized image containing a custom theme.
