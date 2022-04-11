@@ -15,6 +15,9 @@ References:
 4. Now start the keycloak container as well. This will initialize the database.
 5. Import the realm from __realm-export.json__
 
+![](docs/database.jpg)
+
+
 ## Links:
 - Admin console: http://localhost:8180
 - User account self-service: http://localhost:8180/auth/realms/perit/account
