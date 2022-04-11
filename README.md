@@ -54,4 +54,8 @@ References:
 - [Keycloak integration](https://sairamkrish.medium.com/keycloak-integration-part-2-integration-with-angular-frontend-f2716c696a28)
 - https://github.com/mauriciovigolo/keycloak-angular
 
+## Customizing the login theme
 
+See the keycloak folder for a customized image containing a custom theme.
+
+![](docs/perit_theme.jpg)

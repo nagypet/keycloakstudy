@@ -30,7 +30,8 @@ services:
     keycloak:
     #####################################################################################                 
         container_name: keycloakstudy-keycloak
-        image: "jboss/keycloak:16.1.1"
+        #image: "jboss/keycloak:16.1.1"
+        image: "keycloak-perit"
         environment:
             - KEYCLOAK_USER=admin
             - KEYCLOAK_PASSWORD=password
