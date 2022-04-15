@@ -9,22 +9,24 @@ import {RouterModule, Routes} from '@angular/router';
 import {TabSetComponent} from './tab-set/tab-set.component';
 import {SomeContentComponent} from './some-content/some-content.component';
 import {AppAuthGuard} from './auth/app.authguard';
-import {KeycloakService} from 'keycloak-angular';
-import {AuthService} from './services/auth.service';
+import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
+import {AuthService} from './auth/auth.service';
 import {initializeKeycloak} from './auth/keycloak-init.factory';
+import {HttpClientModule} from '@angular/common/http';
+import {environment} from '../environments/environment';
 
 export const routes: Routes = [
-  {path: '', redirectTo: 'admin-gui/public', pathMatch: 'full'},
-  {path: 'admin-gui', redirectTo: 'admin-gui/public', pathMatch: 'full'},
+  {path: '', redirectTo: environment.baseUrl + '/public', pathMatch: 'full'},
+  {path: environment.baseUrl, redirectTo: environment.baseUrl + '/public', pathMatch: 'full'},
   {
-    path: 'admin-gui', component: TabSetComponent,
+    path: environment.baseUrl, component: TabSetComponent,
     children: [
-      {path: 'public', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_VIEWER']}},
+      {path: 'public', component: SomeContentComponent},
       {path: 'approvals', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_APPROVER']}},
       {path: 'administration', component: SomeContentComponent, canActivate: [AppAuthGuard], data: {roles: ['ROLE_ADMIN']}},
     ],
   },
-  //{path: 'admin-gui/login', component: LoginComponent},
+  //{path: 'fe-app/login', component: LoginComponent},
 ];
 
 
@@ -39,7 +41,9 @@ export const routes: Routes = [
   imports: [
     BrowserModule,
     NgbModule,
-    RouterModule.forRoot(routes, {relativeLinkResolution: 'legacy'}),
+    RouterModule.forRoot(routes, {useHash: true}),
+    HttpClientModule,
+    KeycloakAngularModule,
   ],
   providers: [
     AuthService,

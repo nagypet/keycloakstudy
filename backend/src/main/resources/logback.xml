@@ -1,0 +1,106 @@
+<!--
+  ~ Copyright 2020-2020 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration>
+	<appender name="spring-message" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p SPR [%-15.15t] %-30.30c{1}%4L : %m %n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="application-message" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p --- [%-15.15t] %-30.30c{1}%4L : %m %n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Spring framework loggers -->
+	<logger name="org.reflections" level="ERROR"/>
+	<logger name="org.springframework.security.authentication" level="DEBUG"/>
+	<logger name="org.springframework.boot.web.embedded.tomcat" level="INFO"/>
+	<logger name="com.zaxxer.hikari.HikariConfig" level="INFO"/>
+	<logger name="com.zaxxer.hikari" level="ERROR"/>
+	<logger name="org.hibernate.SQL" level="DEBUG"/>
+	<logger name="org.springframework.orm.jpa" level="DEBUG"/>
+	<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+	<logger name="org.springframework.boot.context.config" level="DEBUG"/>
+	<logger name="com.thoughtworks.xstream" level="OFF"/>
+
+	<!-- Keycloak -->
+	<logger name="org.keycloak" level="DEBUG"/>
+
+	<!--
+	<logger name="org.springframework.transaction.interceptor" level="TRACE"/>
+	-->
+	<!-- flooding the log -->
+	<logger name="com.netflix.discovery" level="OFF"/>
+
+	<!-- Application specific loggers -->
+	<logger name="hu.perit.wsstepbystep" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>	
+	<logger name="hu.perit.spvitamin.core.took" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>	
+	<logger name="hu.perit.spvitamin.spring.manifest" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>	
+	<logger name="hu.perit.spvitamin.spring.logging" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.httplogging" level="INFO" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.data.dynamicdatasource" level="INFO" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.security" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.security.auth.filter" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.security.auth.filter.securitycontextremover" level="INFO" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.security.ldap" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	<logger name="hu.perit.spvitamin.spring.config" level="DEBUG" additivity="false">
+		<appender-ref ref="application-message"/>
+	</logger>
+	
+	<!--
+	<logger name="com.netflix.discovery" level="OFF"/>
+	<logger name="org.springframework.transaction" level="DEBUG"/>
+	<logger name="org.springframework.orm.jpa" level="DEBUG"/>
+	<logger name="org.springframework.orm.jpa.vendor" level="ERROR"/>
+	<logger name="org.springframework.security.web.context" level="DEBUG"/>
+	<logger name="org.springframework.security.web.util.matcher" level="DEBUG"/>
+	<logger name="org.springframework" level="DEBUG"/>
+	<logger name="org.hibernate.resource.jdbc.internal" level="TRACE"/>
+
+	#logging.level.org.springframework.web=OFF
+	#logging.level.org.hibernate=TRACE
+	#logging.level.org.hibernate.SQL=DEBUG
+	#logging.level.org.springframework.ws.transport.http=DEBUG
+	#logging.level.org.springframework.ws=DEBUG
+	-->
+
+	<root level="WARN">
+		<appender-ref ref="spring-message"/>
+	</root>
+</configuration>

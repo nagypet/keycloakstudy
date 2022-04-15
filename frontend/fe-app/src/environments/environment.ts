@@ -10,19 +10,20 @@ const keycloakConfig: KeycloakOptions = {
   config: {
     url: keycloakUrl,
     realm: 'perit',
-    clientId: 'keycloak-study'
+    clientId: 'keycloak-study-fe'
   },
   initOptions: {
     onLoad: 'check-sso',
-    silentCheckSsoRedirectUri:
-      window.location.origin + '/assets/silent-check-sso.html',
+    silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html'
   },
 };
 
 export const environment = {
   production: false,
   keycloakOptions: keycloakConfig,
-  keycloakUrl: keycloakUrl
+  keycloakUrl: keycloakUrl,
+  baseUrl: 'fe-app',
+  baseHref: '/#'
 };
 
 /*

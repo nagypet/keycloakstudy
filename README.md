@@ -1,6 +1,6 @@
 # keycloak study
 
-This is a project for demonstrating purposes.
+This is a fully functional Keycloak example using Angular and Spring Boot. I could not find a complete guide with these technologies so far. This sample is based on spvitamin 1.3.12-RELEASE, which includes a package for Keycloak support.
 
 References:
 - [Introducing Keycloak for Identity and Access Management](https://www.thomasvitale.com/introducing-keycloak-identity-access-management/)
@@ -14,6 +14,11 @@ References:
 3. Create a new schema with the name __keycloak__
 4. Now start the keycloak container as well. This will initialize the database.
 5. Import the realm from __realm-export.json__
+6. make a new entry in your hosts file `127.0.0.1 keycloak`
+7. gradlew doI
+8. start the docker swarm `keycloakstudy\docker-compose\keycloakstudy\docker-compose.yml`
+9. the frontend can be found at: http://localhost:9400
+
 
 ![](docs/database.jpg)
 
@@ -204,6 +209,227 @@ export const routes: Routes = [
     ],
   },
 ];
+```
+
+## Integrating with the backend
+
+References:
+- [Step-by-step guide how integrate Keycloak with Angular application](https://sairamkrish.medium.com/keycloak-integration-part-2-integration-with-angular-frontend-f2716c696a28)
+
+We will use the following module: `org.keycloak:keycloak-spring-boot-starter`. This contains a `KeycloakWebSecurityConfigurerAdapter` with that we can secure some REST endpoints using the OAuth2 protocol.
+
+Although there is a pretty big problem with the standard implementation, there is an improved package in spvitamin. Keycloak-protected endpoints work by validating the token if there is an authorization header in the call. If there is no token in the call, it redirects to the / sso / login endpoint first, which redirects the frontend to the Keycloak login window. Unfortunately, I was unable to put this mechanism into operation with a desperate struggle for a day and a half. This is because the browser refused to go to the login page due to CORS protection.
+
+So I preferred to disable redirection in the backend, now there is only token validation. If the token is missing or invalid, a 401 will be returned. So it is up to the frontend to decide how you want to handle the 401 error. It is possible to make a general handler that intercepts 401 errors with an interceptor and tries to authenticate it, but from within the frontend, which does not cause a CORS problem.
+
+Token update works automatically within the frontend. You can sign up for a Keycloak event that watches e.g. to the `OnTokenExpired` event and updates the token.
+
+```typescript
+  private keycloakEvents: Subject<KeycloakEvent> = this.keycloakService.keycloakEvents$;
+
+  constructor(
+    private keycloakService: KeycloakService
+  )
+  {
+    this.loadUserProfile();
+
+    this.keycloakEvents.subscribe({
+      next: (e: KeycloakEvent) =>
+      {
+        if (e.type == KeycloakEventType.OnAuthSuccess)
+        {
+          console.log('Keycloak event: AuthSuccess');
+          this._authenticated = true;
+        }
+        if (e.type == KeycloakEventType.OnAuthLogout)
+        {
+          console.log('Keycloak event: AuthLogout');
+          this._authenticated = false;
+        }
+        if (e.type == KeycloakEventType.OnTokenExpired)
+        {
+          console.log('Keycloak event: TokenExpired');
+          //keycloakService.updateToken();
+        }
+        if (e.type == KeycloakEventType.OnAuthRefreshSuccess)
+        {
+          console.log('Keycloak event: AuthRefreshSuccess');
+        }
+      }
+    });
+  }
+```
+
+Although I did not use this because it prevents the idle-state of the session from being monitored. When someone does not use the application, after a set timeout (`SSO Session Idle` setting in the Keycloak client), the session becomes invalid and the frontend no longer sends the token to the backend. In this case, the backend returns a 401 response.
+
+
+### Steps
+
+#### Import KeycloakAngularModule
+
+This will intercept HTTP communication and inject the JWT token into the authorization header.
+
+```typescript
+@NgModule({
+  declarations: [
+      ...
+  ],
+  imports: [
+    KeycloakAngularModule, <==
+  ],
+  providers: [
+      ...
+  ],
+  bootstrap: [AppComponent]
+})
+```
+
+#### proxy
+We will create a new proxy target for the backend REST endpoint. Please note the changeOrigin=true, this is important otherwise we will get a Keycloak error.
+```typescript
+const PROXY_CONFIG = [
+  {
+    context: [
+      "/auth/**",
+    ],
+    target: "http://localhost:8180",
+    secure: false,
+    changeOrigin: true
+  },
+  {
+    context: [
+      "/books",
+    ],
+    target: "http://localhost:8400",
+    secure: false,
+    changeOrigin: true
+  }
+]
+
+module.exports = PROXY_CONFIG;
+```
+
+#### dependencies
+```
+dependencies {
+    // spvitamin
+    implementation 'hu.perit.spvitamin:spvitamin-core'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-general'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-server'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-admin'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-security'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-security-keycloak'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Keycloak
+    implementation 'org.keycloak:keycloak-spring-boot-starter'
+
+    // Swagger
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
+    implementation "io.springfox:springfox-swagger-ui:3.0.0"
+
+    // apache.commons
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+
+    // Validation
+    implementation 'javax.validation:validation-api'
+
+    // FasterXML
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // YAML formatting
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
+    // Slf4J
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+```
+
+#### WebSecurityConfig
+
+```java
+@EnableWebSecurity
+@Slf4j
+public class WebSecurityConfig
+{
+
+    /*
+     * ============== Order(1) =========================================================================================
+     */
+    @KeycloakConfiguration
+    @Order(1)
+    @DependsOn(value = "SpvitaminSpringContext")
+    public static class Order1 extends SimpleKeycloakWebSecurityConfigurerAdapter
+    {
+        /**
+         * This is a global configuration, will be applied to all oder configurer adapters
+         *
+         * @param auth
+         * @throws Exception
+         */
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
+        {
+            auth.authenticationProvider(keycloakAuthenticationProvider());
+        }
+
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception
+        {
+            scope(http,
+                    //"/sso/**",
+                    BookApi.BASE_URL_BOOKS + "/**"
+            )
+                    .authorizeRequests()
+                    .antMatchers(HttpMethod.GET, BookApi.BASE_URL_BOOKS + "/**").hasRole("VIEWER")
+                    .antMatchers(HttpMethod.POST, BookApi.BASE_URL_BOOKS + "/**").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, BookApi.BASE_URL_BOOKS + "/**").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.DELETE, BookApi.BASE_URL_BOOKS + "/**").hasRole("ADMIN")
+                    .anyRequest().denyAll();
+
+            configureKeycloak(http);
+        }
+    }
+
+
+    /*
+     * ============== Order(2) =========================================================================================
+     */
+    @Configuration
+    @Order(2)
+    public static class Order2 extends WebSecurityConfigurerAdapter
+    {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception
+        {
+            SimpleHttpSecurityBuilder.newInstance(http)
+                    .scope(
+                            "/fe-app/**"
+                    )
+                    .authorizeRequests()
+                    .anyRequest().permitAll();
+
+            SimpleHttpSecurityBuilder.afterAuthorization(http).basicAuth();
+        }
+    }
+}
 ```
 
 ## Customizing the login theme

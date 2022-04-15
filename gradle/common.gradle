@@ -1,0 +1,375 @@
+/*
+ * Copyright 2020-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import groovy.text.SimpleTemplateEngine
+
+group = 'hu.perit'
+
+
+/********************************************************************************************************
+ * BuildTime
+ *******************************************************************************************************/
+if (project.hasProperty('compileJava')) {
+	task createBuildTimeTxt() {
+		outputs.file("${buildDir}/buildtime.txt")
+		doLast {
+			new File(buildDir, "buildtime.txt").text = """Buildtime: ${new Date().format('yyyy-MM-dd HH:mm:ss')}"""
+		}
+	}
+	compileJava.finalizedBy createBuildTimeTxt
+}
+
+
+/********************************************************************************************************
+ * JDK > 1.8
+ *******************************************************************************************************/
+if (project.hasProperty('compileJava')) {
+	compileJava {
+		options.compilerArgs << '--add-exports'
+		options.compilerArgs << 'java.base/sun.security.ssl=ALL-UNNAMED'
+		options.encoding = 'UTF-8'
+	}
+}
+
+  
+/********************************************************************************************************
+ * Default task
+ *******************************************************************************************************/
+defaultTasks 'dist'
+
+
+task dist {
+    group 'fmake'
+	
+	if (project.hasProperty('test')) {
+		dependsOn 'test'
+	}
+	
+	if (project.hasProperty('installDist')) {
+		dependsOn 'installDist'
+	}
+	else if (project.hasProperty('jar')) {
+		dependsOn 'jar'
+	}
+}
+
+
+task distWindowsService {
+    group 'fmake'
+	
+	if (project.hasProperty('test')) {
+		dependsOn 'test'
+	}
+	
+	if (project.hasProperty('installBootDist')) {
+		dependsOn 'installBootDist'
+		dependsOn 'updateServiceXml'
+	}
+}
+
+
+/********************************************************************************************************
+ * Layered bootJar
+ *******************************************************************************************************/
+if (project.hasProperty('bootJar')) {
+	bootJar {
+		layered()
+	}
+}
+
+
+/********************************************************************************************************
+ * Version information
+ *******************************************************************************************************/
+if (new File("${projectDir}/version.ver").exists())
+{
+	version = rootProject.file("${projectDir}/version.ver").text.trim()
+}
+else
+{
+	version = 'dev'
+}
+
+
+/********************************************************************************************************
+ * Test support
+ *******************************************************************************************************/
+
+task prepareTest(type: Copy) {
+    group 'fmake'
+    from "src/main/dist/bin"
+    into "${projectDir}/build/resources/test"
+}
+
+if (project.hasProperty('test')) {
+	test{
+		dependsOn 'prepareTest'
+	}
+}
+
+
+/********************************************************************************************************
+ * Integration test support
+ *******************************************************************************************************/
+if (project.hasProperty('sourceSets')) {
+	sourceSets {
+		integtest {
+			java {
+				compileClasspath += main.output + test.output
+				runtimeClasspath += main.output + test.output
+				srcDir file('src/integtest/java')
+			}
+			resources.srcDir file('src/integtest/resources')
+		}
+	}
+}
+
+configurations {
+    integtestCompile.extendsFrom testCompile
+    integtestRuntime.extendsFrom testRuntime
+	integtestImplementation.extendsFrom testImplementation
+}
+
+task prepareIntegTest(type: Copy) {
+    group 'fmake'
+
+	from "src/main/dist/bin"
+    into "${projectDir}/build/resources/integtest"
+}
+
+task prepareIntegTestInEclipse(type: Copy) {
+    group 'fmake'
+
+	from "src/main/dist/bin"
+    into "${projectDir}/bin/integtest"
+}
+
+task integtest(type: Test) {
+    dependsOn 'prepareIntegTest'
+	if (project.hasProperty('sourceSets')) {
+		testClassesDirs = sourceSets.integtest.output.classesDirs
+		classpath = sourceSets.integtest.runtimeClasspath
+	}
+}
+
+integtest {
+    useJUnitPlatform()
+}
+
+
+/********************************************************************************************************
+ * MANIFEST
+ *******************************************************************************************************/
+if (project.hasProperty('jar')) {
+	jar {
+		dependsOn 'createBuildTimeTxt'
+		enabled = true
+		doFirst {
+			manifest {
+				attributes(
+						'Implementation-Vendor': 'perit.hu',
+						'Build-Time': new File("${buildDir}/buildtime.txt").text.trim(),
+						'Implementation-Version': version
+				)
+				if (project.hasProperty('application')) {
+					attributes(
+						'Implementation-Title': applicationName,
+						'Implementation-Type': 'Application'
+					)
+				}
+			}
+		}
+	}
+}
+
+if (project.hasProperty('bootJar')) {
+	bootJar {
+		doFirst {
+			manifest {
+				attributes(
+						'Implementation-Vendor': 'perit.hu',
+						'Build-Time': new File("${buildDir}/buildtime.txt").text.trim(),
+						'Implementation-Version': version
+				)
+				if (project.hasProperty('application')) {
+					attributes(
+						'Implementation-Title': applicationName,
+						'Implementation-Type': 'Application'
+					)
+				}
+			}
+		}
+	}
+}
+
+
+/********************************************************************************************************
+ * Finalize installBootDist
+ *******************************************************************************************************/
+
+if (project.hasProperty('archivesBaseName')) {
+	task finalizeInstallBootDist(type: Copy) {
+		group 'fmake'
+		from "src/main/dist"
+		into "${buildDir}/install/${archivesBaseName}-boot"
+	}
+}
+
+if (project.hasProperty('installBootDist')) {
+	installBootDist.finalizedBy finalizeInstallBootDist
+}
+
+
+/********************************************************************************************************
+ * updateServiceXml
+ *******************************************************************************************************/
+if (project.hasProperty('archivesBaseName')) {
+	task updateServiceXml() {
+		group 'fmake'
+		description 'Update service xml'
+
+		dependsOn 'installBootDist'
+
+		def serviceFile = new File("${buildDir}/install/${archivesBaseName}-boot/${project.name}-service.xml")
+		def serviceFileName = serviceFile.toString()
+
+		doFirst {
+			if (serviceFile.exists()) {
+				println("> Updating ${serviceFileName} with jarname: ${project.name}-${version}.jar")
+
+				def binding = [
+						JARNAME_PLACEHOLDER: "${project.name}-${version}.jar"
+				]
+
+				def engine = new SimpleTemplateEngine()
+				def template = engine.createTemplate(serviceFile.text).make(binding)
+
+				serviceFile.write template.toString()
+			} else {
+				println("> ${serviceFileName} not found!")
+			}
+		}
+
+		outputs.upToDateWhen {
+			// Ha nem létezik, akkor up-to-date a task
+			!(new File(serviceFileName).exists())
+		}
+	}
+}
+
+
+/********************************************************************************************************
+ * Application
+ *******************************************************************************************************/
+if (project.hasProperty('application')) {
+	application {
+		if (applicationDefaultJvmArgs.isEmpty()) {
+			applicationDefaultJvmArgs = ['-XX:+UseG1GC', '-Djava.net.preferIPv4Stack=true', '-Duser.country=US', '-Duser.language=en', '-Dorg.freemarker.loggerLibrary=none']
+		}
+	}
+}
+ 
+
+task configurations() {
+    group 'fmake'
+    description 'Prints the configuration items'
+	doLast {
+		configurations.each { println it.name }
+	}
+}
+
+
+/********************************************************************************************************
+ * Start scripts
+ *******************************************************************************************************/
+
+if (project.hasProperty('startScripts')) {
+	startScripts {
+		doLast {
+			windowsScript.text = windowsScript.text.replaceAll('set CLASSPATH=.*', 'set CLASSPATH=%APP_HOME%\\\\lib\\\\*')
+			unixScript.text = unixScript.text.replaceAll('CLASSPATH=.*', 'CLASSPATH=\\$APP_HOME/lib/*')
+		}
+	}
+}
+
+
+/********************************************************************************************************
+ * IntelliJ IDEA
+ *******************************************************************************************************/
+
+task prepareRunInIDEA(type: Copy) {
+    group 'fmake'
+    from "src/main/dist/bin"
+    into "${projectDir}/out/production/resources"
+}
+
+task prepareRunInIDEA2021(type: Copy) {
+	group 'fmake'
+	from "src/main/dist/bin"
+	into "${projectDir}/build/resources/main"
+}
+
+
+/********************************************************************************************************
+ * Eclipse
+ *******************************************************************************************************/
+
+task prepareRunInEclipse(type: Copy) {
+    group 'fmake'
+    from "src/main/dist/bin"
+    into "${projectDir}/bin/main"
+}
+
+
+/********************************************************************************************************
+ * RUN
+ *******************************************************************************************************/
+
+task prepareRun(type: Copy) {
+    group 'fmake'
+    from "src/main/dist/bin"
+    into "${projectDir}/build/bin"
+}
+
+if (project.hasProperty('run')) {
+	run {
+		dependsOn prepareRun
+		doFirst {
+			applicationDefaultJvmArgs += ['-Dspring.profiles.active=default,dev']
+		}
+		workingDir = "${projectDir}/build/bin"
+	}
+}
+
+if (project.hasProperty('bootRun')) {
+	bootRun {
+		dependsOn prepareRun
+		doFirst {
+			applicationDefaultJvmArgs += ['-Dspring.profiles.active=default,dev']
+		}
+		workingDir = "${projectDir}/build/bin"
+	}
+}
+
+
+if (project.hasProperty('jacocoTestReport')) {
+	jacocoTestReport {
+		reports {
+			xml.enabled true
+		}
+	}
+}
+

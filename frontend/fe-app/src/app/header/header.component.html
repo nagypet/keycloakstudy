@@ -7,9 +7,9 @@
     </div>
   </div>
   <form class="form-inline">
-    <button *ngIf="loggedIn !== true" type="button" class="btn btn-primary" routerLink="/admin-gui/login"><span class="oi oi-account-login"></span> Login</button>
-    <span *ngIf="loggedIn === true" class="text-light">Welcome {{username}}!</span>
-    <button *ngIf="loggedIn === true" type="button" class="btn btn-secondary" style="margin: 0 0 0 10px" (click)="onLogout()"><span class="oi oi-account-logout"></span> Logout</button>
+    <button *ngIf="authService.authenticated !== true" type="button" class="btn btn-primary" (click)="authService.login()"><span class="oi oi-account-login"></span> Login</button>
+    <span *ngIf="authService.authenticated === true" class="text-light">Welcome {{authService.getFullname()}}!</span>
+    <button *ngIf="authService.authenticated === true" type="button" class="btn btn-secondary" style="margin: 0 0 0 10px" (click)="authService.logout()"><span class="oi oi-account-logout"></span> Logout</button>
   </form>
 </nav>
 

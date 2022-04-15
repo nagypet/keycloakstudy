@@ -1,0 +1,14 @@
+
+ __        ______        _                   _                     _             
+ \ \      / / ___|   ___| |_ ___ _ __       | |__  _   _       ___| |_ ___ _ __  
+  \ \ /\ / /\___ \  / __| __/ _ \ '_ \ _____| '_ \| | | |_____/ __| __/ _ \ '_ \ 
+   \ V  V /  ___) | \__ \ ||  __/ |_) |_____| |_) | |_| |_____\__ \ ||  __/ |_) |
+    \_/\_/  |____/  |___/\__\___| .__/      |_.__/ \__, |     |___/\__\___| .__/ 
+                                |_|                |___/                  |_|    
+                                       project
+
+${java.vendor} ${java.runtime.version}
+Spring-Boot: ${spring-boot.version}
+${application.title}: ${application.version}
+
+Author: Peter Nagy <nagy.peter.home@gmail.com>

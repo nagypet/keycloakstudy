@@ -41,6 +41,7 @@ services:
             - DB_SCHEMA=keycloak
             - DB_USER=keycloak
             - DB_PASSWORD=sa
+            - KEYCLOAK_LOGLEVEL=INFO
         command: ["-Djboss.socket.binding.port-offset=100"]  
         ports:
             - "8180:8180"
@@ -50,6 +51,22 @@ services:
         hostname: keycloak
         depends_on:
             - postgres
+
+
+    #####################################################################################                 
+    backend:
+    #####################################################################################                 
+        container_name: keycloakstudy-backend
+        image: keycloakstudy-backend
+        environment:
+              - JAVA_OPTS=
+              - KEYCLOAKSTUDY_BACKEND_OPTS=-Dspring.profiles.active=docker
+        ports:
+            - "9400:9400"
+        networks: 
+            - back-tier-net
+        hostname: 'backend'
+
 
   
 volumes:

@@ -1,0 +1,71 @@
+/*
+ * Copyright 2020-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+class Constants {
+	// Set this constant to true if spvitamin will be compiled as source
+	static final boolean COMPILE_SPVITAMIN = false
+}
+
+
+new ProjectConfigurer(settings).doIt()
+
+
+class ProjectConfigurer {
+
+	File rootDir
+	Settings settings
+
+	ProjectConfigurer(Settings settings) {
+		this.rootDir = settings.getRootDir()
+		this.settings = settings
+	}
+	
+	
+	void doIt() {
+		long startTime = System.currentTimeMillis()
+		println "Included projects:"
+		
+		this.discoverRecursive(this.rootDir)
+		
+		println String.format("Dependency check took %d ms", System.currentTimeMillis() - startTime)
+	}
+
+
+	private void discoverRecursive(File root) {
+		root.eachDir(){ dir ->
+			if (this.isDirRelevant(dir)) {
+				if (new File(dir, 'build.gradle').exists() && !dir.name.equals("spvitamin") && (Constants.COMPILE_SPVITAMIN || !"${root}".contains("spvitamin"))) {
+					this.settings.include "${dir.name}"
+					def projDir = new File("${root}", "${dir.name}")
+					this.settings.project(":${dir.name}").projectDir = projDir
+					println "  :${dir.name} => ${projDir}"
+				}
+				else {
+					discoverRecursive(dir)
+				}
+			}
+		}
+	}
+	
+	
+	private boolean isDirRelevant(File dir) {
+		return !(dir.name.equals("admin-gui") || dir.name.equals(".git") || dir.name.equals(".gradle") || dir.name.equals("build") || dir.name.equals("out"))
+	}
+}
+
+
+

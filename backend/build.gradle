@@ -1,0 +1,105 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'application'
+	id "com.github.ManifestClasspath" version "0.1.0-RELEASE"
+}
+
+ext {
+    set('spvitaminVersion', '1.3.12-RELEASE')
+    set('keycloakVersion', '12.0.4')
+	//set('imagePrefix', '')
+}
+
+
+apply from: '../gradle/common.gradle'
+apply from: '../gradle/docker.gradle'
+
+
+repositories {
+    jcenter()
+	mavenCentral()
+}
+
+
+
+application {
+    mainClassName = 'hu.perit.wsstepbystep.WsstepbystepApplication'
+    // Some JVM options already set in common.gradle
+    applicationDefaultJvmArgs += ['-Xmx512m', '-Xms32m']
+}
+
+
+sourceCompatibility = 11
+
+dependencies {
+    //compile project(':spvitamin-core')
+    //compile project(':spvitamin-spring-general')
+    //compile project(':spvitamin-spring-server')
+    //compile project(':spvitamin-spring-admin')
+    //compile project(':spvitamin-spring-security')
+    //compile project(':spvitamin-spring-security-keycloak')
+
+    implementation 'hu.perit.spvitamin:spvitamin-core'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-general'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-server'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-admin'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-security'
+    implementation 'hu.perit.spvitamin:spvitamin-spring-security-keycloak'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Keycloak
+    implementation 'org.keycloak:keycloak-spring-boot-starter'
+
+    // Swagger
+    implementation "io.springfox:springfox-boot-starter:3.0.0"
+    implementation "io.springfox:springfox-swagger-ui:3.0.0"
+
+    // apache.commons
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
+
+    // Validation
+    implementation 'javax.validation:validation-api'
+
+	// FasterXML
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // YAML formatting
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+
+    // Slf4J
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+
+dependencyManagement {
+    imports {
+        mavenBom "hu.perit.spvitamin:spvitamin-dependencies:${spvitaminVersion}"
+        mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}"
+    }
+}
+
+
+test {
+	useJUnitPlatform()
+}
+
+
+dockerImage() {
+	dependsOn 'dockerBackendImage'
+}

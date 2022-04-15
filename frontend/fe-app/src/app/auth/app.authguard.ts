@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Router, RouterStateSnapshot} from '@angular/router';
 import {KeycloakAuthGuard, KeycloakService} from 'keycloak-angular';
+import {AuthService} from './auth.service';
+import {environment} from '../../environments/environment';
 
 @Injectable()
 export class AppAuthGuard extends KeycloakAuthGuard
 {
-  constructor(protected router: Router, protected keycloakAngular: KeycloakService)
+  constructor(protected router: Router, protected keycloakAngular: KeycloakService, private authService: AuthService)
   {
     super(router, keycloakAngular);
   }
@@ -16,7 +18,7 @@ export class AppAuthGuard extends KeycloakAuthGuard
     {
       if (!this.authenticated)
       {
-        this.keycloakAngular.login();
+        this.authService.login(environment.baseUrl + '/' + route.url.toString());
         return;
       }
       console.log('Expected role: ', route.data.roles);

@@ -1,0 +1,16 @@
+running with ng serve:
+Access to XMLHttpRequest at 'http://localhost:8400/sso/login' 
+	(redirected from 'http://localhost:4200/books') from origin 'http://localhost:4200' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+running on localhost:8400:
+Access to XMLHttpRequest at 'http://localhost:8180/auth/realms/perit/protocol/openid-connect/auth?response_type=code&client_id=keycloak-study&redirect_uri=http%3A%2F%2Flocalhost%3A8400%2Fsso%2Flogin&state=825f21e7-cc04-4144-9dab-7548e6c15af7&login=true&scope=openid' 
+	(redirected from 'http://localhost:8400/books') from origin 'http://localhost:8400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+running in docker:
+Access to XMLHttpRequest at 'http://keycloak:8180/auth/realms/perit/protocol/openid-connect/auth?response_type=code&client_id=keycloak-study&redirect_uri=http%3A%2F%2Flocalhost%3A9400%2Fsso%2Flogin&state=69326c3d-d0b3-464e-a9e8-88545972f2f9&login=true&scope=openid' 
+	(redirected from 'http://localhost:9400/books') from origin 'http://localhost:9400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+	
+Access to XMLHttpRequest at 'http://keycloak:8180/auth/realms/perit/protocol/openid-connect/auth?response_type=code&client_id=keycloak-study-fe&redirect_uri=http%3A%2F%2Fbackend%3A9400%2Fsso%2Flogin&state=b654066f-a683-47ae-8ff4-c7a30dc95fd2&login=true&scope=openid' 
+	(redirected from 'http://backend:9400/books') from origin 'http://backend:9400' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.	
+	
+	

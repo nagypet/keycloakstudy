@@ -1,1 +1,26 @@
 <p>path: {{location}}</p>
+<span class="error-text">{{error}}</span>
+
+<table *ngIf="!error" class="table table-sm table-striped">
+  <thead class="thead-dark">
+  <tr>
+    <th scope="col">ID</th>
+    <th scope="col">Author</th>
+    <th scope="col">Title</th>
+    <th scope="col">Issued at</th>
+    <th scope="col">Pages</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let book of books">
+    <th scope="row">{{book.id}}</th>
+    <td>{{book.author}}</td>
+    <td>{{book.title}}</td>
+    <td>{{book.dateIssued}}</td>
+    <td>{{book.pages}}</td>
+  </tr>
+  </tbody>
+</table>
+
+<button (click)="onReload()">Reload</button>
+
