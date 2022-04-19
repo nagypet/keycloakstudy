@@ -266,8 +266,9 @@ Token update works automatically within the frontend. You can sign up for a Keyc
   }
 ```
 
-Although I did not use this approach, because it prevents the idle-state of the session from being monitored. When someone does not use the application, after a set timeout (`SSO Session Idle` setting in the Keycloak client), the session becomes invalid and the frontend no longer sends the token to the backend. In this case, the backend returns a 401 response.
+Though I did not use this approach, because it prevents the idle-state of the session from being monitored. When the application is idle, after a set timeout (`SSO Session Idle` setting in the Keycloak client), the session becomes invalid and the frontend no longer sends the token to the backend. In this case, the backend returns a 401 response.
 
+Another pitfall is that when the frontend sends the login request to Keycloak, the origin of the HTTP call comes into the token. This will be in the Issuer field. It must match for the frontend and the backend. Therefore, it only works that if both the frontend and the backend call Keycloak with the same URL. It will not work if one uses `http://localhost:8180/auth` and the other uses `http://keycloak:8180/auth` because the issuer will not match. For this reason, development is a continues struggle, because the backend must be started differently if the frontend is running on port 4200 or if it is running on its own. I could not find any solution, how this token issuer field can be customized, only I have seen, there is an ongoing discussion on this.
 
 ### Steps
 
