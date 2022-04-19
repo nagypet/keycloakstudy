@@ -1,6 +1,12 @@
 # keycloak study
 
-This is a fully functional Keycloak example using Angular and Spring Boot. I could not find a complete guide with these technologies so far. This sample is based on spvitamin 1.3.12-RELEASE, which includes a package for Keycloak support.
+This is a fully functional Keycloak sample using Angular and Spring Boot. This was my second attemp to create a sample application.  
+
+The first time I tried to stick to an existing application and my goal was to not have to change anything on the interfaces. This could not be completed. Now, I’m not trying to do that, I’m trying to find out how the creators dreamed of Keycloak?
+
+I couldn’t find a complete guide with Angular and Spring Boot anywhere, so I did it myself. There are a lot of thymeleaf and standalone Angular examples, but there is no one where the frontend redirects to the login window of the keycloak and then calls into the Spring based backend with the acquired token.
+
+This sample is based on spvitamin 1.3.12-RELEASE, which includes a package for Keycloak support: `hu.perit.spvitamin:spvitamin-spring-security-keycloak`.
 
 References:
 - [Introducing Keycloak for Identity and Access Management](https://www.thomasvitale.com/introducing-keycloak-identity-access-management/)
@@ -218,9 +224,9 @@ References:
 
 We will use the following module: `org.keycloak:keycloak-spring-boot-starter`. This contains a `KeycloakWebSecurityConfigurerAdapter` with that we can secure some REST endpoints using the OAuth2 protocol.
 
-Although there is a pretty big problem with the standard implementation, there is an improved package in spvitamin. Keycloak-protected endpoints work by validating the token if there is an authorization header in the call. If there is no token in the call, it redirects to the / sso / login endpoint first, which redirects the frontend to the Keycloak login window. Unfortunately, I was unable to put this mechanism into operation with a desperate struggle for a day and a half. This is because the browser refused to go to the login page due to CORS protection.
+Although there is a pretty big problem with the standard implementation, there is an improved package in spvitamin. Keycloak-protected endpoints work by validating the token if there is an authorization header in the call. If there is no token in the call, it redirects to the `/sso/login` endpoint first, which redirects the frontend to the Keycloak login window. I was unable to put this mechanism into operation with a desperate struggle for a day and a half. This is because the browser refused to go to the login page due to CORS protection.
 
-So I preferred to disable redirection in the backend, now there is only token validation. If the token is missing or invalid, a 401 will be returned. So it is up to the frontend to decide how you want to handle the 401 error. It is possible to make a general handler that intercepts 401 errors with an interceptor and tries to authenticate it, but from within the frontend, which does not cause a CORS problem.
+So I decided to disable redirection in the backend, now there is only token validation. If the token is missing or invalid, a 401 will be returned. It is up to the frontend to decide how to handle the 401 error. It is possible to make a general handler that intercepts 401 errors with an interceptor and tries to authenticate it from within the frontend, which does not cause a CORS problem.
 
 Token update works automatically within the frontend. You can sign up for a Keycloak event that watches e.g. to the `OnTokenExpired` event and updates the token.
 
@@ -260,7 +266,7 @@ Token update works automatically within the frontend. You can sign up for a Keyc
   }
 ```
 
-Although I did not use this because it prevents the idle-state of the session from being monitored. When someone does not use the application, after a set timeout (`SSO Session Idle` setting in the Keycloak client), the session becomes invalid and the frontend no longer sends the token to the backend. In this case, the backend returns a 401 response.
+Although I did not use this approach, because it prevents the idle-state of the session from being monitored. When someone does not use the application, after a set timeout (`SSO Session Idle` setting in the Keycloak client), the session becomes invalid and the frontend no longer sends the token to the backend. In this case, the backend returns a 401 response.
 
 
 ### Steps
@@ -320,12 +326,6 @@ dependencies {
     implementation 'hu.perit.spvitamin:spvitamin-spring-security'
     implementation 'hu.perit.spvitamin:spvitamin-spring-security-keycloak'
 
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    testCompileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -335,28 +335,7 @@ dependencies {
     // Keycloak
     implementation 'org.keycloak:keycloak-spring-boot-starter'
 
-    // Swagger
-    implementation "io.springfox:springfox-boot-starter:3.0.0"
-    implementation "io.springfox:springfox-swagger-ui:3.0.0"
-
-    // apache.commons
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
-
-    // Validation
-    implementation 'javax.validation:validation-api'
-
-    // FasterXML
-    implementation 'com.fasterxml.jackson.core:jackson-core'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-    // YAML formatting
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
-
-    // Slf4J
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-
-    // Test dependencies
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    ...
 }
 ```
 
