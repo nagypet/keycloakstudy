@@ -2,13 +2,13 @@
   "id": "perit",
   "realm": "perit",
   "displayName": "perit Hungary Zrt.",
-  "notBefore": 1650266554,
+  "notBefore": 1650311808,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
   "accessTokenLifespan": 60,
   "accessTokenLifespanForImplicitFlow": 900,
-  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionIdleTimeout": 120,
   "ssoSessionMaxLifespan": 36000,
   "ssoSessionIdleTimeoutRememberMe": 0,
   "ssoSessionMaxLifespanRememberMe": 0,
@@ -335,7 +335,9 @@
           "attributes": {}
         }
       ],
-      "my-resource-server": [
+      "security-admin-console": [],
+      "admin-cli": [],
+      "keycloak-study-be-authorizations": [
         {
           "id": "e4dca465-a18e-4e01-abe9-38f7d29911ea",
           "name": "uma_protection",
@@ -345,8 +347,6 @@
           "attributes": {}
         }
       ],
-      "security-admin-console": [],
-      "admin-cli": [],
       "account-console": [],
       "broker": [
         {
@@ -491,18 +491,18 @@
     {
       "id": "0b7e0e67-2e80-4f25-909f-af0bce68fdca",
       "createdTimestamp": 1650028992608,
-      "username": "service-account-my-resource-server",
+      "username": "service-account-keycloak-study-be-authorizations",
       "enabled": true,
       "totp": false,
       "emailVerified": false,
-      "serviceAccountClientId": "my-resource-server",
+      "serviceAccountClientId": "keycloak-study-be-authorizations",
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
         "default-roles-perit"
       ],
       "clientRoles": {
-        "my-resource-server": [
+        "keycloak-study-be-authorizations": [
           "uma_protection"
         ]
       },
@@ -703,7 +703,7 @@
       "rootUrl": "http://localhost:8400",
       "adminUrl": "http://localhost:8400",
       "surrogateAuthRequired": false,
-      "enabled": true,
+      "enabled": false,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
@@ -764,105 +764,20 @@
       ]
     },
     {
-      "id": "abc8cfc9-0292-4c8f-9091-c1227b73d9ae",
-      "clientId": "keycloak-study-fe",
-      "rootUrl": "http://localhost:8400",
-      "adminUrl": "http://localhost:8400",
-      "surrogateAuthRequired": false,
-      "enabled": true,
-      "alwaysDisplayInConsole": false,
-      "clientAuthenticatorType": "client-secret",
-      "redirectUris": [
-        "http://localhost:9400/*",
-        "http://backend:9400/*",
-        "http://localhost:4200/*",
-        "http://localhost:8400/*"
-      ],
-      "webOrigins": [
-        "*"
-      ],
-      "notBefore": 0,
-      "bearerOnly": false,
-      "consentRequired": false,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "publicClient": true,
-      "frontchannelLogout": false,
-      "protocol": "openid-connect",
-      "attributes": {
-        "saml.assertion.signature": "false",
-        "id.token.as.detached.signature": "false",
-        "saml.multivalued.roles": "false",
-        "saml.force.post.binding": "false",
-        "saml.encrypt": "false",
-        "oauth2.device.authorization.grant.enabled": "false",
-        "backchannel.logout.revoke.offline.tokens": "false",
-        "saml.server.signature": "false",
-        "saml.server.signature.keyinfo.ext": "false",
-        "use.refresh.tokens": "true",
-        "exclude.session.state.from.auth.response": "false",
-        "oidc.ciba.grant.enabled": "false",
-        "saml.artifact.binding": "false",
-        "backchannel.logout.session.required": "true",
-        "client_credentials.use_refresh_token": "false",
-        "saml_force_name_id_format": "false",
-        "saml.client.signature": "false",
-        "tls.client.certificate.bound.access.tokens": "false",
-        "require.pushed.authorization.requests": "false",
-        "saml.authnstatement": "false",
-        "display.on.consent.screen": "false",
-        "saml.onetimeuse.condition": "false"
-      },
-      "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": true,
-      "nodeReRegistrationTimeout": -1,
-      "protocolMappers": [
-        {
-          "id": "92f76351-f74a-4239-a426-a9a5b90a34ce",
-          "name": "username",
-          "protocol": "openid-connect",
-          "protocolMapper": "oidc-usermodel-property-mapper",
-          "consentRequired": false,
-          "config": {
-            "userinfo.token.claim": "true",
-            "user.attribute": "username",
-            "id.token.claim": "true",
-            "access.token.claim": "true",
-            "claim.name": "sub",
-            "jsonType.label": "String"
-          }
-        }
-      ],
-      "defaultClientScopes": [
-        "web-origins",
-        "profile",
-        "roles",
-        "email"
-      ],
-      "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
-      ]
-    },
-    {
       "id": "bd83b38d-f38c-4474-be5c-71accb3679ed",
-      "clientId": "my-resource-server",
-      "rootUrl": "http://localhost:8400",
-      "adminUrl": "http://localhost:8400",
+      "clientId": "keycloak-study-be-authorizations",
+      "rootUrl": "http://localhost:9400",
+      "adminUrl": "http://localhost:9400",
       "surrogateAuthRequired": false,
       "enabled": false,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "http://localhost:8400/*"
+        "http://localhost:9400/*"
       ],
       "webOrigins": [
-        "http://localhost:8400"
+        "+"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -963,6 +878,30 @@
         "policyEnforcementMode": "ENFORCING",
         "resources": [
           {
+            "name": "books",
+            "ownerManagedAccess": false,
+            "displayName": "books",
+            "attributes": {},
+            "_id": "b4ad1598-1ef4-4daf-bc3f-e7eb8eece46b",
+            "uris": [
+              "/books/*"
+            ],
+            "scopes": [
+              {
+                "name": "view"
+              },
+              {
+                "name": "update"
+              },
+              {
+                "name": "delete"
+              },
+              {
+                "name": "create"
+              }
+            ]
+          },
+          {
             "name": "Default Resource",
             "type": "urn:my-resource-server:resources:default",
             "ownerManagedAccess": false,
@@ -986,6 +925,18 @@
             }
           },
           {
+            "id": "8504b987-a074-4466-be7e-ea15ad198384",
+            "name": "getAllBooks",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"books\"]",
+              "scopes": "[\"view\"]",
+              "applyPolicies": "[\"Default Policy\"]"
+            }
+          },
+          {
             "id": "fc84bdad-1a0b-42cf-ae63-83da6286de3b",
             "name": "Default Permission",
             "description": "A permission that applies to the default resource type",
@@ -998,9 +949,115 @@
             }
           }
         ],
-        "scopes": [],
+        "scopes": [
+          {
+            "id": "8ba40459-9e47-4199-9b2b-66ad431bffd8",
+            "name": "update",
+            "displayName": "update"
+          },
+          {
+            "id": "8cfb79db-07bc-4315-abf1-ab37372a01a0",
+            "name": "create",
+            "displayName": "create"
+          },
+          {
+            "id": "fced0601-4a7a-43e3-927f-91784adae4e6",
+            "name": "view",
+            "displayName": "view"
+          },
+          {
+            "id": "11ed5851-0436-4213-9f06-422745e835a6",
+            "name": "delete",
+            "displayName": "delete"
+          }
+        ],
         "decisionStrategy": "UNANIMOUS"
       }
+    },
+    {
+      "id": "abc8cfc9-0292-4c8f-9091-c1227b73d9ae",
+      "clientId": "keycloak-study-fe",
+      "rootUrl": "http://localhost:8400",
+      "adminUrl": "http://backend:9400",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:9400/*",
+        "http://backend:9400/*",
+        "http://localhost:4200/*",
+        "http://localhost:8400/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "id.token.as.detached.signature": "false",
+        "saml.multivalued.roles": "false",
+        "saml.force.post.binding": "false",
+        "saml.encrypt": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "use.refresh.tokens": "true",
+        "exclude.session.state.from.auth.response": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "saml.artifact.binding": "false",
+        "backchannel.logout.session.required": "true",
+        "client_credentials.use_refresh_token": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "require.pushed.authorization.requests": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "92f76351-f74a-4239-a426-a9a5b90a34ce",
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "sub",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
     },
     {
       "id": "1311a31c-c862-415c-8cc0-23ede808224c",
@@ -1618,8 +1675,39 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
-  "identityProviderMappers": [],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "internalId": "9a8827b3-dd8a-411f-8955-c260ad05d13e",
+      "providerId": "google",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": false,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "syncMode": "IMPORT",
+        "clientSecret": "**********",
+        "clientId": "965810933000-lo99t3o0pm6v5jnb3c6vvlk8n83p17j1.apps.googleusercontent.com",
+        "useJwksUrl": "true"
+      }
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "id": "18a65119-cd04-4631-bf87-04babef36228",
+      "name": "Hardcoded role mapper",
+      "identityProviderAlias": "google",
+      "identityProviderMapper": "oidc-hardcoded-role-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "role": "ROLE_VIEWER"
+      }
+    }
+  ],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
       {
@@ -1730,7 +1818,7 @@
     ],
     "org.keycloak.userprofile.UserProfileProvider": [
       {
-        "id": "cd6d73a6-8560-4190-8e49-f420c81f2b95",
+        "id": "b9c69212-485f-4566-ba22-3631a45129f3",
         "providerId": "declarative-user-profile",
         "subComponents": {},
         "config": {}

@@ -417,3 +417,13 @@ public class WebSecurityConfig
 See the keycloak folder for a customized image containing a custom theme.
 
 ![](docs/perit_theme.jpg)
+
+## Integrating with 3rd party identity providers
+
+First one have to registrer a client with the selected provider. I have tested Google according [this](https://www.zoho.com/creator/newhelp/app-settings/register-client-google.html) description.
+
+And the login button for Google appears indeed.
+
+![](docs/login_with_google.jpg)
+
+It does not work yet, because the redirect URL is not yet valid, and we must you https.
